@@ -1,14 +1,14 @@
-#include "dvs_flow/event_viewer.h"
-namespace event_viewer{
+#include "dvs_flow/event_loader.h"
+namespace event_loader{
 
-  EventViewer::EventViewer(ros::NodeHandle &nh):nh_(nh)
+  EventLoader::EventLoader(ros::NodeHandle &nh):nh_(nh)
   {
       //initialize subscribers and publishers
     ROS_INFO("Subscribing to \"events\" Started");
-    events_sub_ = nh_.subscribe("/dvs/events",1000, &EventViewer::eventListenerCallback,this);  
+    events_sub_ = nh_.subscribe("/dvs/events",1000, &EventLoader::eventListenerCallback,this);  
 
     image_transport::ImageTransport it_(nh_);
-    image_sub_ = it_.subscribe("/dvs/image_raw", 1, &EventViewer::imageListenerCallback, this);
+    image_sub_ = it_.subscribe("/dvs/image_raw", 1, &EventLoader::imageListenerCallback, this);
 
     cv::namedWindow("view");  //ADD FLAG TO RUN FOLLOWING -- NOT REQUIRED USED FOR DEBUGING
     cv::startWindowThread();  //ADD FLAG TO RUN FOLLOWING -- NOT REQUIRED USED FOR DEBUGING
@@ -16,20 +16,21 @@ namespace event_viewer{
       //TODO:: initialize events queue
   }
 
-  EventViewer::~EventViewer()
+  EventLoader::~EventLoader()
   {
 
       cv::destroyWindow("view"); //ADD FLAG TO RUN FOLLOWING -- NOT REQUIRED USED FOR DEBUGING
       //TODO::clean shutdown publishers and subscribers 
   }
 
-  void EventViewer::eventListenerCallback(const dvs_msgs::EventArray::ConstPtr& msg)
+  void EventLoader::eventListenerCallback(const dvs_msgs::EventArray::ConstPtr& msg)
   {
       ROS_INFO_STREAM("No of Events Received: "<<msg->events.size()); 
+      
       //TODO Populate event data structure
   }
 
-  void EventViewer::imageListenerCallback(const sensor_msgs::Image::ConstPtr& msg)
+  void EventLoader::imageListenerCallback(const sensor_msgs::Image::ConstPtr& msg)
   {
       ROS_INFO_STREAM("image listener to be implemented"); 
 

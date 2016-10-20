@@ -1,5 +1,5 @@
-#ifndef EVENT_VIEWER_H_
-#define EVENT_VIEWER_H_
+#ifndef event_loader_H_
+#define event_loader_H_
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
@@ -13,13 +13,13 @@
 
 #include <sensor_msgs/Image.h>
 
-namespace event_viewer
+namespace event_loader
 {
 
-class EventViewer {
+class EventLoader {
 public:
-  EventViewer(ros::NodeHandle &nh);
-  virtual ~EventViewer();
+  EventLoader(ros::NodeHandle &nh);
+  virtual ~EventLoader();
 
 private:
   std::vector<dvs_msgs::Event> events;
@@ -40,4 +40,4 @@ private:
 };
 } // namespace
 
-#endif // EVENT_VIEWER_H_
+#endif // event_loader_H_

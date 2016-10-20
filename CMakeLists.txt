@@ -49,6 +49,6 @@ include_directories(
 # add_dependencies(listener  ${catkin_EXPORTED_TARGETS})
 
 
-add_executable(event_viewer_node src/event_viewer_node.cpp src/event_viewer.cpp)
-target_link_libraries(event_viewer_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(event_viewer_node ${catkin_EXPORTED_TARGETS})
+add_executable(event_loader_node src/event_loader_node.cpp src/event_loader.cpp)
+target_link_libraries(event_loader_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_dependencies(event_loader_node ${catkin_EXPORTED_TARGETS})
