@@ -18,7 +18,7 @@ namespace event_loader{
 
   EventLoader::~EventLoader()
   {
-
+      
       cv::destroyWindow("view"); //ADD FLAG TO RUN FOLLOWING -- NOT REQUIRED USED FOR DEBUGING
       //TODO::clean shutdown publishers and subscribers 
   }
@@ -27,12 +27,16 @@ namespace event_loader{
   {
       ROS_INFO_STREAM("No of Events Received: "<<msg->events.size()); 
       
+      //FIND A BETTER WAY TO DO IT!
+      for ( auto it = msg->events.begin(); it != msg->events.end(); ++it )
+          events_.push_back(*it);
+      ROS_INFO_STREAM("Events Recorded "<<events_.size());
       //TODO Populate event data structure
   }
 
   void EventLoader::imageListenerCallback(const sensor_msgs::Image::ConstPtr& msg)
   {
-      ROS_INFO_STREAM("image listener to be implemented"); 
+      //ROS_INFO_STREAM("image listener to be implemented"); 
 
        //Read the image, and populate image Mat
       cv_bridge::CvImagePtr cv_ptr;
@@ -57,8 +61,6 @@ namespace event_loader{
         image_pub_.publish(cv_image.toImageMsg());
       }
       used_last_image_ = false;*/
-
-     
   }
 
 

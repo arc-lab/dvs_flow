@@ -12,6 +12,7 @@
 #include <cv_bridge/cv_bridge.h>
 
 #include <sensor_msgs/Image.h>
+#include <vector> 
 
 namespace event_loader
 {
@@ -22,7 +23,7 @@ public:
   virtual ~EventLoader();
 
 private:
-  std::vector<dvs_msgs::Event> events;
+  std::vector<dvs_msgs::Event> events_;
 
   cv::Mat image_;
   bool flag_image_used_; //why do we need this ?
