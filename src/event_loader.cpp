@@ -25,13 +25,14 @@ namespace event_loader{
 
   void EventLoader::eventListenerCallback(const dvs_msgs::EventArray::ConstPtr& msg)
   {
-      ROS_INFO_STREAM("Fresh Events Received: "<<msg->events.size()); 
+      //ROS_INFO_STREAM("Fresh Events Received: "<<msg->events.size()); 
       
       //FIND A BETTER WAY TO DO IT!
       events_.insert(events_.end(),msg->events.begin(),msg->events.end());
+      compute_flow::compute_flow();
       // for ( auto it = msg->events.begin(); it != msg->events.end(); ++it )
       //     events_.push_back(*it);
-      ROS_INFO_STREAM("Events Recorded "<<events_.size());
+      //ROS_INFO_STREAM("Events Recorded "<<events_.size());
       //TODO Populate event data structure
   }
 

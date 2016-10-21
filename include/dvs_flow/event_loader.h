@@ -13,6 +13,7 @@
 
 #include <sensor_msgs/Image.h>
 #include <vector> 
+#include "compute_flow/compute_flow.h"
 
 namespace event_loader
 {
