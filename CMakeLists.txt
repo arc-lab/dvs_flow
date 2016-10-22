@@ -14,10 +14,15 @@ find_package(catkin REQUIRED COMPONENTS
 	sensor_msgs
 	image_transport
 	cv_bridge
+	pcl_ros
 	)
 find_package(Boost REQUIRED)
 find_package(OpenCV REQUIRED)
 
+find_package(PCL 1.7 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 catkin_package(
 
@@ -27,6 +32,7 @@ catkin_package(
 		cv_bridge
 		dvs_msgs
 		sensor_msgs
+		pcl_ros
 	DEPENDS
 		OpenCV
 		boost
@@ -50,8 +56,8 @@ include_directories(
 
 
 add_executable(event_loader_node src/event_loader_node.cpp src/event_loader.cpp src/compute_flow.cpp src/event_filter.cpp)
-target_link_libraries(event_loader_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(event_loader_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(event_loader_node ${catkin_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
+add_dependencies(event_loader_node ${catkin_EXPORTED_TARGETS} )
 
 add_executable(test src/test.cpp)
 target_link_libraries(test ${catkin_LIBRARIES})

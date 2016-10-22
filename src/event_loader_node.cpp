@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "event_loader");
 
   ros::NodeHandle n("~");
-
+  
   event_loader::EventLoader load_events(n);
   ros::spin();
 
