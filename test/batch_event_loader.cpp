@@ -36,12 +36,16 @@ namespace event_loader{
     }
     else
     {
-      compute_flow::compute_flow();
-      ROS_INFO_STREAM("Events Erased");
-      events_array_[0].clear();
-      ROS_INFO_STREAM(" -- Events Recorded [0]"<<events_array_[0].size());
+      if(events_array_.size() == 1)
+      {
+        dvs_events e;
+        events_array_.push_back(e);
+        ROS_INFO_STREAM("New Event Created");
+      }
+      events_array_[1].insert(events_array_[1].end(),msg->events.begin(),msg->events.end()); 
+      ROS_INFO_STREAM("Events Recorded "<<events_array_[1].size());
     }
-
+    compute_flow::compute_flow();
       //displayEvents(events_array_);
   }
 
@@ -83,5 +87,6 @@ namespace event_loader{
           ROS_INFO_STREAM(" x ["<<i<<"]["<<j<<"[= "<<e[i][j].x);
         }
       }
+      system("pause");
   }
 }

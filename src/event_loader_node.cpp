@@ -13,7 +13,6 @@ int main(int argc, char **argv)
   ros::NodeHandle n("~");
 
   event_loader::EventLoader load_events(n);
-  
   ros::spin();
 
   return 0;

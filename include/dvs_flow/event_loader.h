@@ -18,13 +18,15 @@
 namespace event_loader
 {
 
+typedef std::vector<dvs_msgs::Event> dvs_events;
 class EventLoader {
 public:
   EventLoader(ros::NodeHandle &nh);
   virtual ~EventLoader();
 
 private:
-  std::vector<dvs_msgs::Event> events_;
+  dvs_events events_;
+  std::vector<dvs_events> events_array_;
 
   cv::Mat image_;
   bool flag_image_used_; //why do we need this ?
@@ -38,6 +40,7 @@ private:
 
   void eventListenerCallback(const dvs_msgs::EventArray::ConstPtr& msg);
   void imageListenerCallback(const sensor_msgs::Image::ConstPtr& msg);
+  void displayEvents(std::vector<dvs_events> &e_array);
 
 };
 } // namespace
