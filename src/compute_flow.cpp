@@ -3,7 +3,7 @@
 namespace compute_flow
 {
 	//[vx, vy, It] = computeFlow(x, y, t, pol, N, TH1, TH2, NCOLS, NROWS)
-	void compute_flow()
+	void compute_flow(pcl::PointCloud<PointT> cloud)
 	{
 		ROS_INFO_STREAM("compute_flow()");
 		/** CONVERT THIS FUNCTION
@@ -35,7 +35,7 @@ namespace compute_flow
 			    	
 			    	[vvx,vvy]=fitplane(m, TH2);
 			**/
-					fit_plane();
+					fit_plane(cloud);
 			/**    	
 			    	if(isnan(vvx) || isinf(vvx))
 			    	{
@@ -61,32 +61,34 @@ namespace compute_flow
 	}
 
 	//function [vx,vy]=fitplane(mm, TH)
-	void fit_plane()
+	pcl::IndicesPtr fit_plane(const pcl::PointCloud<PointT>::Ptr &cloud, const pcl::IndicesPtr &indices,float distanceThreshold,int maxIterations,pcl::ModelCoefficients *coefficientsOut)
 	{
-		ROS_INFO_STREAM("fit_plane()");
-		/*vx = 0; vy = 0;
-		[XX,YY]=find(mm>0);
-		X=[];
-		for i=1:length(XX)
-		{
-			X=[X; XX(i) YY(i) mm(XX(i),YY(i))];
-		}
-		
+	// Extract plane
+		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+	// Create the segmentation object
+		pcl::SACSegmentation<pcl::PointXYZ> seg;
+	// Optional
+		seg.setOptimizeCoefficients (true);
+		seg.setMaxIterations (maxIterations);
+	// Mandatory
+		seg.setModelType (pcl::SACMODEL_PLANE);
+		seg.setMethodType (pcl::SAC_RANSAC);
+		seg.setDistanceThreshold (distanceThreshold);
 
-		[coeff]=pca_modified(X');
-		*/
-			pca_modified();
-		/*	
-		if size(coeff,2)< 3 
+		seg.setInputCloud (cloud);
+		if(indices->size())
 		{
-			return
+			seg.setIndices(indices);
 		}
-		
-		normal = coeff(:,3);
+		seg.segment (*inliers, *coefficients);
 
-		vx = -normal(3)/(normal(2)^2+normal(1)^2)*normal(1)*1e6;
-		vy = -normal(3)/(normal(2)^2+normal(1)^2)*normal(2)*1e6;
-		*/
+		if(coefficientsOut)
+		{
+			*coefficientsOut = *coefficients;
+		}
+
+		return pcl::IndicesPtr(new std::vector<int>(inliers->indices));
 	}
 
 
