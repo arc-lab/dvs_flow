@@ -19,7 +19,7 @@ namespace compute_flow
 		void compute_flow(pcl::PointCloud<PointT> cloud);
 		void pca_modified();
 		void robust_svd();
-		void fit_plane(pcl::PointCloud<PointT> cloud);
+		void fit_plane(const pcl::PointCloud<PointT>::Ptr &cloud);
 } 
 
 #endif //_compute_flow_H_ 

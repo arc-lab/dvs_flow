@@ -35,7 +35,8 @@ namespace compute_flow
 			    	
 			    	[vvx,vvy]=fitplane(m, TH2);
 			**/
-					fit_plane(cloud);
+					const pcl::PointCloud<PointT>::Ptr cloud_(&cloud);
+					fit_plane(cloud_);
 			/**    	
 			    	if(isnan(vvx) || isinf(vvx))
 			    	{
@@ -61,8 +62,12 @@ namespace compute_flow
 	}
 
 	//function [vx,vy]=fitplane(mm, TH)
-	pcl::IndicesPtr fit_plane(const pcl::PointCloud<PointT>::Ptr &cloud, const pcl::IndicesPtr &indices,float distanceThreshold,int maxIterations,pcl::ModelCoefficients *coefficientsOut)
+	pcl::IndicesPtr fit_plane(const pcl::PointCloud<PointT>::Ptr &cloud)
 	{
+		pcl::IndicesPtr indices(new std::vector<int>);
+		float distanceThreshold = 0.01;
+		int maxIterations = 1000;
+		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
 	// Extract plane
 		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
 		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
