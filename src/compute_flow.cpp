@@ -3,7 +3,7 @@
 namespace compute_flow
 {
 	//[vx, vy, It] = computeFlow(x, y, t, pol, N, TH1, TH2, NCOLS, NROWS)
-	void compute_flow(pcl::PointCloud<PointT> cloud)
+	void compute_flow(pcl::PointCloud<PointT> &cloud)
 	{
 		ROS_INFO_STREAM("compute_flow()");
 		/** CONVERT THIS FUNCTION
@@ -35,8 +35,8 @@ namespace compute_flow
 			    	
 			    	[vvx,vvy]=fitplane(m, TH2);
 			**/
-					const pcl::PointCloud<PointT>::Ptr cloud_(&cloud);
-					fit_plane(cloud_);
+					
+					fit_plane(cloud);
 			/**    	
 			    	if(isnan(vvx) || isinf(vvx))
 			    	{
@@ -62,17 +62,17 @@ namespace compute_flow
 	}
 
 	//function [vx,vy]=fitplane(mm, TH)
-	pcl::IndicesPtr fit_plane(const pcl::PointCloud<PointT>::Ptr &cloud)
+	void fit_plane(pcl::PointCloud<PointT> &cloud_)
 	{
+		const pcl::PointCloud<PointT>::Ptr cloud(&cloud_);
 		pcl::IndicesPtr indices(new std::vector<int>);
 		float distanceThreshold = 0.01;
 		int maxIterations = 1000;
-		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-	// Extract plane
+		// Extract plane
 		pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
 		pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
 	// Create the segmentation object
-		pcl::SACSegmentation<pcl::PointXYZ> seg;
+		pcl::SACSegmentation<PointT> seg;
 	// Optional
 		seg.setOptimizeCoefficients (true);
 		seg.setMaxIterations (maxIterations);
@@ -88,12 +88,12 @@ namespace compute_flow
 		}
 		seg.segment (*inliers, *coefficients);
 
-		if(coefficientsOut)
-		{
-			*coefficientsOut = *coefficients;
-		}
+		// if(coefficientsOut)
+		// {
+		// 	*coefficientsOut = *coefficients;
+		// }
 
-		return pcl::IndicesPtr(new std::vector<int>(inliers->indices));
+		//return pcl::IndicesPtr(new std::vector<int>(inliers->indices));
 	}
 
 
