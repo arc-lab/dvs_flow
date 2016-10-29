@@ -7,7 +7,7 @@ namespace event_loader{
       //initialize subscribers and publishers
     ROS_INFO("Subscribing to \"events\" Started");
     events_sub_ = nh_.subscribe("/dvs/events",1000, &EventLoader::eventListenerCallback,this);  
-    events_pub_= nh_.advertise<pcl::PointCloud<PointT>> ("events", 1);
+    events_pub_= nh_.advertise<pcl::PointCloud<PointT>> ("events", 10);
     events_pcl_.header.frame_id = "odom";
     events_pcl_.width = 0;
     events_pcl_.height = 1;
@@ -45,8 +45,8 @@ namespace event_loader{
        f_event.x = msg->events[i].x/10;
        f_event.y = msg->events[i].y/10;
        f_event.z = (msg->events[i].ts.toSec() - msg->events[0].ts.toSec())*100;
-       ROS_INFO_STREAM("Z = "<<f_event.z);
-       f_event.intensity = 255;
+      //ROS_INFO_STREAM("Z = "<<f_event.z);
+       f_event.intensity = (msg->events[i].polarity?0:1) * 255;
        events_pcl_.push_back(f_event);
       }
       ROS_INFO_STREAM("Events Recorded in PCL"<<events_pcl_.size());

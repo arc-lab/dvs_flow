@@ -3,7 +3,7 @@
 namespace compute_flow
 {
 	//[vx, vy, It] = computeFlow(x, y, t, pol, N, TH1, TH2, NCOLS, NROWS)
-	void compute_flow(pcl::PointCloud<PointT> &cloud)
+	void computeFlow(pcl::PointCloud<PointT> &cloud)
 	{
 		ROS_INFO_STREAM("compute_flow()");
 		/** CONVERT THIS FUNCTION
@@ -36,7 +36,7 @@ namespace compute_flow
 			    	[vvx,vvy]=fitplane(m, TH2);
 			**/
 					
-					fit_plane(cloud);
+					fitPlane(cloud);
 			/**    	
 			    	if(isnan(vvx) || isinf(vvx))
 			    	{
@@ -62,7 +62,7 @@ namespace compute_flow
 	}
 
 	//function [vx,vy]=fitplane(mm, TH)
-	void fit_plane(pcl::PointCloud<PointT> &cloud_)
+	void fitPlane(pcl::PointCloud<PointT> &cloud_)
 	{
 		const pcl::PointCloud<PointT>::Ptr cloud(&cloud_);
 		pcl::IndicesPtr indices(new std::vector<int>);
@@ -96,9 +96,19 @@ namespace compute_flow
 		//return pcl::IndicesPtr(new std::vector<int>(inliers->indices));
 	}
 
-
+	void estimateNormals(pcl::PointCloud<PointT> cloud)
+	{
+		const pcl::PointCloud<PointT>::Ptr cloud_ptr(&cloud);
+		pcl::NormalEstimation<PointT, pcl::Normal> ne;
+  		ne.setInputCloud(cloud_ptr);
+  		pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
+  		ne.setSearchMethod (tree);
+  		pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+		ne.setRadiusSearch (0.03);
+		ne.compute (*cloud_normals);
+	}	
 	//function [U,mu,vars] = pca( X )
-	void pca_modified()
+	void pcaModified()
 	{
 		ROS_INFO_STREAM("pca_modified()");
 		/*
@@ -137,7 +147,7 @@ namespace compute_flow
 		{
 			[~,SS,V]= robustSvd(X'*X); 
 			**/
-			robust_svd();
+			robustSVD();
 			/**
 			vars=diag(SS);
 			U = X * V * diag(1./sqrt(vars));
@@ -146,7 +156,7 @@ namespace compute_flow
 		{
 			[~,SS,U]=robustSvd(X*X');
 			**/
-			robust_svd();
+			robustSVD();
 			/**
 			vars=diag(SS);
 		}
@@ -158,12 +168,13 @@ namespace compute_flow
 	}
 
 	//function [U,S,V] = robustSvd( X, trials )
-	void robust_svd()
+	void robustSVD()
 	{
 		ROS_INFO_STREAM("robust_svd()");
 		/**
 		if(nargin<2)
 		{
+
 			trials=100;
 		}
 
