@@ -14,7 +14,7 @@ namespace compute_flow
 {
 	const int NROWS = 340, NCOLS = 340; //Max and Min Value of X and Y (Event Positions)
 	const int N = 5; // TimeStamp Patch Mask Dimension around the Events
-	const double TIME_THRES = 0.2;
+	const double TIME_THRES = 0.99;
 	const double TH2 = 0.1;
 	typedef pcl::PointXYZI PointT;
 	typedef Eigen::MatrixXd Mat;

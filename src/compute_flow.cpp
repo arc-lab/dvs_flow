@@ -70,58 +70,6 @@ namespace compute_flow
 			//Mat m = Mat::Zero(2*N+1,2*N+1); //Time Stamp patch 
 
 		}
-		/**
-	    It_pos=zeros(NROWS,NCOLS);
-	    It_neg=zeros(NROWS,NCOLS);
-	    vx=zeros(NROWS,NCOLS); vy=zeros(NROWS,NCOLS);
-	    for ii=1:1:length(t) 
-	    {
-	       ptx=x(ii)+1;
-	       pty=y(ii)+1;   
-		  
-		    if pol(ii)==1
-			{	  
-	        	It_pos(pty,ptx)=t(ii);
-		    	m=It_pos(max(pty-N,1):min(pty+N, NROWS),max(ptx-N,1):min(ptx+N, NCOLS));
-		    }
-		    else
-		    {
-		        It_neg(pty,ptx)=t(ii);
-		        m=It_neg(max(pty-N,1):min(pty+N, NROWS),max(ptx-N,1):min(ptx+N, NCOLS));
-		    }
-		    
-		    if numel(m) == (2*N+1)*(2*N+1)
-		    {
-				m(abs(m(N+1,N+1)-m)/m(N+1,N+1)>TH1)=0;
-		   	    if (sum(m(:)>0))
-			    {
-			    	
-			    	[vvx,vvy]=fitplane(m, TH2);
-			**/
-					
-					//estimateNormals(cloud);
-			/**    	
-			    	if(isnan(vvx) || isinf(vvx))
-			    	{
-			    		vvx = 0;
-			    	}
-			    	
-			    	if(isnan(vvy) || isinf(vvy))
-			    	{ 
-			    		vvy = 0;
-			        }
-
-			        if (norm([vvx,vvy])>0)
-			        {
-			                    aa=[vvx vvy];
-			                    vy(pty,ptx)=aa(1);
-			                    vx(pty,ptx)=aa(2);
-			        }
-	   			}
-			}
-		}  
-	   It = max(cat(3, It_pos, It_neg), [], 3);
-		 **/
 	}
 
 	void find(Mat &m, Mat &X)
@@ -184,6 +132,7 @@ namespace compute_flow
 		std::cout << "V: " << svd.matrixV() << std::endl;
 		//U = X * svd.matrixV() * S.inverse(); //check if diagnol(1/S) works
 		U = svd.matrixV();
+		std::cout<<"Checking orthonormality"<<U.transpose()*U<<std::endl;
 		ROS_INFO_STREAM("pca_modified()");
 		}
 	}
