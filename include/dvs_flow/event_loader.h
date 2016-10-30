@@ -30,8 +30,8 @@ public:
   virtual ~EventLoader();
 
 private:
-  pcl::PointCloud<PointT> events_pcl_;
-  //pcl::PointCloud<PointT>::Ptr events_pcl_ptr_;
+  //pcl::PointCloud<PointT> events_pcl_;
+  pcl::PointCloud<PointT>::Ptr events_pcl_ptr_;
   dvs_events events_;
   std::vector<dvs_events> events_array_;
 
@@ -41,12 +41,16 @@ private:
   ros::NodeHandle nh_;
   float t_first_ = -1;
   ros::Subscriber events_sub_;
-  ros::Publisher events_pub_;
+  
+  
+
   image_transport::Subscriber image_sub_;
 
   void eventListenerCallback(const dvs_msgs::EventArray::ConstPtr& msg);
   void imageListenerCallback(const sensor_msgs::Image::ConstPtr& msg);
-  void displayEvents(std::vector<dvs_events> &e_array);
+  
+  ros::Publisher events_pub_;
+  void displayEvents();
 
 };
 } // namespace

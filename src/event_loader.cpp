@@ -8,9 +8,11 @@ namespace event_loader{
     ROS_INFO("Subscribing to \"events\" Started");
     events_sub_ = nh_.subscribe("/dvs/events",1000, &EventLoader::eventListenerCallback,this);  
     events_pub_= nh_.advertise<pcl::PointCloud<PointT>> ("events", 10);
-    events_pcl_.header.frame_id = "odom";
-    events_pcl_.width = 0;
-    events_pcl_.height = 1;
+    pcl::PointCloud<PointT>::Ptr temp_ptr (new pcl::PointCloud<PointT>);
+    events_pcl_ptr_ = temp_ptr;
+    events_pcl_ptr_->header.frame_id = "odom";
+    events_pcl_ptr_->width = 0;
+    events_pcl_ptr_->height = 1;
     
 
     image_transport::ImageTransport it_(nh_);
@@ -34,12 +36,12 @@ namespace event_loader{
   {
     ROS_INFO_STREAM("Fresh Events Received: "<<msg->events.size()); 
     //ROS_INFO_STREAM("events_array_ size"<<events_array_.size());
-    if(events_pcl_.size()<BATCH_SIZE)
+    if(events_pcl_ptr_->size()<BATCH_SIZE)
     {
       //events_array_[0].insert(events_array_[0].end(),msg->events.begin(),msg->events.end());      
-      // events_pcl_.width += msg->events.size();
-      // events_pcl_.data.insert(events_array_[0].end(),msg->events.begin(),msg->events.end()); 
-      for(int i = 0; i < msg->events.size();++i)
+      // events_pcl_ptr_->width += msg->events.size();
+      // events_pcl_ptr_->data.insert(events_array_[0].end(),msg->events.begin(),msg->events.end()); 
+      for(auto i = 0; i < msg->events.size();++i)
       {
        PointT f_event;
        f_event.x = msg->events[i].x/10;
@@ -47,24 +49,21 @@ namespace event_loader{
        f_event.z = (msg->events[i].ts.toSec() - msg->events[0].ts.toSec())*100;
       //ROS_INFO_STREAM("Z = "<<f_event.z);
        f_event.intensity = (msg->events[i].polarity?0:1) * 255;
-       events_pcl_.push_back(f_event);
+       events_pcl_ptr_->push_back(f_event);
       }
-      ROS_INFO_STREAM("Events Recorded in PCL"<<events_pcl_.size());
+      ROS_INFO_STREAM("Events Recorded in PCL"<<events_pcl_ptr_->size());
       
     }
-    if(events_pcl_.size()>=BATCH_SIZE)
+    if(events_pcl_ptr_->size()>=BATCH_SIZE)
     {
-      ROS_INFO_STREAM(" --- Events Recorded in PCL"<<events_pcl_.size());
-      events_pcl_.header.stamp = ros::Time::now().toNSec();
-      events_pub_.publish(events_pcl_);
-      ROS_INFO_STREAM("PUBLISHED POINT_CLOUD ");
-      //compute_flow::compute_flow();
-      events_pcl_.clear();
-      events_pcl_.height = 1;
-      ROS_INFO_STREAM(" -- Events Erased"<< events_pcl_.size());
+      ROS_INFO_STREAM(" --- Events Recorded in PCL"<<events_pcl_ptr_->size());
+      displayEvents();
+      compute_flow::computeFlow(events_pcl_ptr_);
+      
+      events_pcl_ptr_->clear();
+      events_pcl_ptr_->height = 1;
+      ROS_INFO_STREAM(" -- Events Erased"<< events_pcl_ptr_->size());
     }
-
-      //displayEvents(events_array_);
   }
 
   void EventLoader::imageListenerCallback(const sensor_msgs::Image::ConstPtr& msg)
@@ -96,14 +95,14 @@ namespace event_loader{
       used_last_image_ = false;*/
   }
 
-  void EventLoader::displayEvents(std::vector<dvs_events> &e)
+  void EventLoader::displayEvents()
   {
-      for ( int i = 0; i < e.size(); ++i )
+      if(events_pub_.getNumSubscribers()>0)
       {
-        for (int j = 0; j < e[i].size() ; ++j)
-        {
-          ROS_INFO_STREAM(" x ["<<i<<"]["<<j<<"[= "<<e[i][j].x);
-        }
+        events_pcl_ptr_->header.stamp = ros::Time::now().toNSec();
+        events_pub_.publish(*events_pcl_ptr_);
+        ROS_INFO_STREAM("PUBLISHED POINT_CLOUD ");
       }
   }
+
 }
