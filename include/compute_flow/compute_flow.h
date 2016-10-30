@@ -21,8 +21,8 @@ namespace compute_flow
 	
 	//Eigen::MatrixXd pclToMatrix(pcl::PointCloud<PointT>::Ptr cloud);
 	void computeFlow(pcl::PointCloud<PointT>::Ptr cloud);
-	void fitPlane(Mat &m, const double TH2);
-	void pca(Mat &X);
+	bool fitPlane(Mat &m,Eigen::Vector3d &normal, const double TH2);
+	void pca(Mat &X,Mat &U);
 
 	void find(Mat &m, Mat &X);
 	Mat getPatch(Mat &m,int x, int y, int N);

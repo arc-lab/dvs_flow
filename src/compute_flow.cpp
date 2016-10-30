@@ -52,8 +52,16 @@ namespace compute_flow
 			if(m.size()!=0)
 			{
 				//Select Events that are close in the time_stamp
-				fitPlane(m,TH2);
-
+				Eigen::Vector3d normal;
+				if(fitPlane(m,normal,TH2))
+				{
+				std::cout<<"Normal computed "<<normal;
+				double vx = -1*normal(2)/(std::pow(normal(1),2)+std::pow(normal(0),2))*normal(0)*1e6;
+				double vy = -1*normal(2)/(std::pow(normal(1),2)+std::pow(normal(0),2))*normal(1)*1e6;
+				std::cout<<"vx = "<<vx<<"vy = "<<vy<<std::endl;
+				std::cout<<"Press any key to continue";
+				std::cin.ignore(); 
+				}
 			}
 			else
 			{
@@ -135,7 +143,7 @@ namespace compute_flow
 		}
 	}
 
-	void fitPlane(Mat &m, const double TH2)
+	bool fitPlane(Mat &m, Eigen::Vector3d &normal, const double TH2)
 	{
 		double c_val = m(N,N);
 		// std::cout<<"central val = "<<c_val<<std::endl;
@@ -145,25 +153,37 @@ namespace compute_flow
 		if(m.sum() > 0)
 		{
 			Mat X(0,3);
+			Mat U;
 			find(m,X);
 			ROS_INFO_STREAM("fit plane input \n"<<X);
-			pca(X);
+			if(X.rows() >= 3)
+			{
+			pca(X,U);
+			normal= U.col(2);
+			std::cout<<"computed Normal"<< normal<<std::endl;
+			return true;
+			}
+			else
+				return false;
 		}
 
 
 	}
 	//function [U,mu,vars] = pca( X )
-	void pca(Mat &X)
+	void pca(Mat &X, Mat &U)
 	{
-		if(X.rows() != 1)
+		if(X.rows() >= 1) //Checking if there is sufficient data to get coeff > 3
 		{
 		X = (X.rowwise() - X.colwise().mean())/std::sqrt(X.rows()-1);
 		std::cout<<"X_centered"<<X<<std::endl;
+		X = X.transpose()*X;
 		Eigen::JacobiSVD<Mat> svd(X, Eigen::ComputeFullU | Eigen::ComputeFullV);
 		std::cout << "U: " << svd.matrixU().size() << std::endl;
+		Mat S = svd.singularValues().asDiagonal();
+		std::cout<<"S: "<< S <<std::endl; 
 		std::cout << "V: " << svd.matrixV() << std::endl;
-		std::cout<<"Press any key to continue";
-		std::cin.ignore();
+		//U = X * svd.matrixV() * S.inverse(); //check if diagnol(1/S) works
+		U = svd.matrixV();
 		ROS_INFO_STREAM("pca_modified()");
 		}
 	}
